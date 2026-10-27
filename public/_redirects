@@ -1,0 +1,7 @@
+# Cloudflare Pages / Workers (and Netlify): the Simmer demo is a separate
+# single-page app, so its recipe pages (e.g. /simmer-demo/recipes/3) have to
+# load the demo's index.html. /simmer-demo/ itself is served as a folder
+# index, no rule needed. Only the app's route is matched, never /assets/,
+# because Cloudflare applies these rules even when a real file exists.
+# Add a line here if Simmer gets new routes.
+/simmer-demo/recipes/*  /simmer-demo/index.html  200

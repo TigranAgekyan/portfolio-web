@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tigran Agekyan — Frontend Developer</title>
+
+    <!-- Apply a saved light theme before the first paint, so there's no flash
+         of the dark theme on load (see src/lib/theme.ts) -->
+    <script>
+      try {
+        if (localStorage.getItem('theme') === 'light') document.documentElement.dataset.theme = 'light'
+      } catch {}
+    </script>
+
+    <!-- Web fonts from the Stitch design:
+         - Bricolage Grotesque: name, section headings, project titles
+         - IBM Plex Sans: all body copy
+         - IBM Plex Mono: dates, tags, tech stacks, placeholder labels -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

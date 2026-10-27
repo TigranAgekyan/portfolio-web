@@ -1,0 +1,166 @@
+/* Loads Tailwind (base reset + every utility class). */
+@import 'tailwindcss';
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design tokens from style/DESIGN.md + style/code.html.
+ * Every token here becomes a Tailwind utility, e.g. --color-ink -> text-ink,
+ * bg-ink, border-ink; --font-display -> font-display.
+ */
+@theme {
+  /* ---- Colors ---- */
+  --color-canvas: #0d0f12; /* page background (deep matte charcoal) */
+  --color-panel: #14171d; /* placeholder boxes, diagram nodes, phone frame */
+  --color-panel-bar: #181b22; /* browser-frame address bar */
+  --color-line: #222730; /* 1px hairline dividers and default borders */
+  --color-line-strong: #2e3540; /* borders on buttons and the phone frame */
+  --color-line-hover: #434c59; /* border on hover, plus diagram arrows */
+  --color-separator: #333a45; /* the "·" dot between EN and עב in the header */
+  --color-grid: #222730; /* cell borders of the hero's ripple grid (drawn at 40% opacity) */
+  --color-grid-pulse: #14171d; /* cell fill at the peak of a click ripple (same as panel: cells brighten) */
+  --color-ink: #f3f4f6; /* primary text (off-white) */
+  --color-muted: #9ba1a9; /* secondary text, metadata, captions */
+  --color-accent: #f59e0b; /* amber: links, primary button, active language */
+  --color-accent-hover: #d97706; /* primary button hover */
+  --color-on-accent: #111317; /* text placed on top of amber */
+
+  /* ---- Fonts ---- */
+  --font-display: 'Bricolage Grotesque', sans-serif; /* headings */
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif; /* body (Tailwind default) */
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace; /* tags, dates */
+}
+
+/*
+ * shadcn/ui semantic tokens, mapped onto the design palette above so shadcn
+ * components match the site. The site's own `accent` (amber) and `muted`
+ * (gray text) keep their meaning, so shadcn's `--accent` / `--muted` are
+ * defined here but intentionally not registered as Tailwind colors.
+ */
+:root {
+  --radius: 0.25rem;
+  --background: var(--color-canvas);
+  --foreground: var(--color-ink);
+  --card: var(--color-canvas);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-panel);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-accent);
+  --primary-foreground: var(--color-on-accent);
+  --secondary: var(--color-panel);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-panel);
+  --muted-foreground: var(--color-muted);
+  --accent: var(--color-panel);
+  --accent-foreground: var(--color-ink);
+  --destructive: #ef4444;
+  --border: var(--color-line);
+  --input: var(--color-line-strong);
+  --ring: var(--color-accent);
+}
+
+/*
+ * Light theme, switched on by data-theme="light" on <html> (see
+ * src/lib/theme.ts). Same cool-grey hue as the dark palette with every role
+ * mirrored: paper-like canvas instead of charcoal, hairlines a step darker than
+ * the canvas, near-black ink. Amber is darkened because #f59e0b on a light
+ * background is too faint to read as link text.
+ */
+:root {
+  color-scheme: dark; /* dark scrollbars and form controls */
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --color-canvas: #f4f5f7; /* page background (soft paper white) */
+  --color-panel: #eceef1; /* placeholder boxes, diagram nodes, phone frame */
+  --color-panel-bar: #e5e7eb; /* browser-frame address bar */
+  /* Lines are kept darker than a straight contrast mirror of the dark theme:
+     dark lines on a light background read fainter than light lines on dark */
+  --color-line: #cdd1d7; /* 1px hairline dividers and default borders */
+  --color-line-strong: #b8bdc5; /* borders on buttons and the phone frame */
+  --color-line-hover: #8b929d; /* border on hover, plus diagram arrows */
+  --color-separator: #a8aeb7; /* the "·" dot between EN and עב in the header */
+  --color-grid: #8b929d; /* ripple grid borders: much darker, as 40% opacity washes them out on white */
+  --color-grid-pulse: #b8bdc5; /* ripple peak fill: mid-grey, so cells pulse darker instead of lighter */
+  --color-ink: #111317; /* primary text (near-black) */
+  --color-muted: #5a6069; /* secondary text, metadata, captions */
+  --color-accent: #b45309; /* deep amber: links, primary button, active language */
+  --color-accent-hover: #92400e; /* primary button hover */
+  --color-on-accent: #fdfaf5; /* text placed on top of amber */
+}
+
+/* Theme switch: the new theme is revealed in a circle growing from the
+   toggle button (animated in src/lib/theme.ts). Turn off the browser's
+   default cross-fade so only the circle shows */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@theme inline {
+  /* Ripple for the hero's background grid (ui/background-ripple-effect.tsx).
+     Each cell sets its own --duration and --delay based on its distance from
+     the clicked cell, so the pulse spreads outward. At the peak the cell's
+     fill shifts to --color-grid-pulse: lighter in dark mode, darker in light.
+     (An animation overrides the cell's inline background-color while it runs.) */
+  --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out none 1 var(--delay, 0ms);
+
+  @keyframes cell-ripple {
+    0% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 0.6;
+      background-color: var(--color-grid-pulse);
+    }
+    100% {
+      opacity: 0.4;
+    }
+  }
+
+  --font-heading: var(--font-display);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  /* Keep anchored sections from hiding under the 56px fixed header */
+  section[id] {
+    scroll-margin-top: 3.5rem;
+  }
+}
