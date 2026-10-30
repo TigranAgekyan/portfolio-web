@@ -6,6 +6,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tigran Agekyan — Frontend Developer</title>
 
+    <!-- Search: the summary shown under the title in results, and the one
+         address Google should treat as the site (the bare domain; www redirects to it) -->
+    <meta
+      name="description"
+      content="Tigran Agekyan, frontend developer in Tel Aviv. I build web apps, and the servers they run on. Available from February 2027."
+    />
+    <link rel="canonical" href="https://tigranagekyan.com/" />
+
+    <!-- Link previews (LinkedIn, WhatsApp, Slack, X…): 1200×630 card in public/img/og.jpg -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tigranagekyan.com/" />
+    <meta property="og:site_name" content="Tigran Agekyan" />
+    <meta property="og:title" content="Tigran Agekyan — Frontend Developer" />
+    <meta
+      property="og:description"
+      content="I build web apps, and the servers they run on. Frontend developer in Tel Aviv, available from February 2027."
+    />
+    <meta property="og:image" content="https://tigranagekyan.com/img/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Tigran Agekyan, Frontend Developer, Tel Aviv" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Structured data: tells search engines this site belongs to the person
+         Tigran Agekyan, and links it to the GitHub and LinkedIn profiles -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Tigran Agekyan",
+        "url": "https://tigranagekyan.com/",
+        "image": "https://tigranagekyan.com/img/portrait.webp",
+        "jobTitle": "Frontend Developer",
+        "address": { "@type": "PostalAddress", "addressLocality": "Tel Aviv", "addressCountry": "IL" },
+        "knowsLanguage": ["he", "ru", "en"],
+        "sameAs": ["https://github.com/TigranAgekyan", "https://www.linkedin.com/in/tigran-agekyan"]
+      }
+    </script>
+
     <!-- Apply a saved light theme before the first paint, so there's no flash
          of the dark theme on load (see src/lib/theme.ts) -->
     <script>

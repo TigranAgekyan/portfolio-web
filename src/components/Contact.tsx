@@ -157,8 +157,7 @@ export default function Contact() {
               <GitHubIcon className="h-4 w-4" />
               <span>GitHub (TigranAgekyan)</span>
             </a>
-            {/* LinkedIn: put the profile URL in href */}
-            <a href="#" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-muted transition-colors hover:text-ink">
+            <a href="https://www.linkedin.com/in/tigran-agekyan" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-muted transition-colors hover:text-ink">
               <LinkedInIcon className="h-4 w-4" />
               <span>LinkedIn</span>
             </a>

@@ -1,0 +1,7 @@
+# Everything may be crawled. The Simmer demo is kept out of search results
+# with a noindex header instead (see _headers), which only works if crawlers
+# can still fetch it, so it isn't blocked here
+User-agent: *
+Allow: /
+
+Sitemap: https://tigranagekyan.com/sitemap.xml

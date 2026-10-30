@@ -1,0 +1,5 @@
+# Cloudflare Pages response headers.
+# The Simmer demo is a separate app embedded in the Work section; keep it
+# out of search results so it never outranks the portfolio itself
+/simmer-demo/*
+  X-Robots-Tag: noindex
