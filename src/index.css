@@ -18,12 +18,11 @@
   --color-line: #222730; /* 1px hairline dividers and default borders */
   --color-line-strong: #2e3540; /* borders on buttons and the phone frame */
   --color-line-hover: #434c59; /* border on hover, plus diagram arrows */
-  --color-separator: #333a45; /* the "·" dot between EN and עב in the header */
   --color-grid: #222730; /* cell borders of the hero's ripple grid (drawn at 40% opacity) */
   --color-grid-pulse: #14171d; /* cell fill at the peak of a click ripple (same as panel: cells brighten) */
   --color-ink: #f3f4f6; /* primary text (off-white) */
   --color-muted: #9ba1a9; /* secondary text, metadata, captions */
-  --color-accent: #f59e0b; /* amber: links, primary button, active language */
+  --color-accent: #f59e0b; /* amber: links, primary button */
   --color-accent-hover: #d97706; /* primary button hover */
   --color-on-accent: #111317; /* text placed on top of amber */
   --color-success: #22c55e; /* green: contact form's Send button once the message is sent */
@@ -84,12 +83,11 @@
   --color-line: #cdd1d7; /* 1px hairline dividers and default borders */
   --color-line-strong: #b8bdc5; /* borders on buttons and the phone frame */
   --color-line-hover: #8b929d; /* border on hover, plus diagram arrows */
-  --color-separator: #a8aeb7; /* the "·" dot between EN and עב in the header */
   --color-grid: #8b929d; /* ripple grid borders: much darker, as 40% opacity washes them out on white */
   --color-grid-pulse: #b8bdc5; /* ripple peak fill: mid-grey, so cells pulse darker instead of lighter */
   --color-ink: #111317; /* primary text (near-black) */
   --color-muted: #5a6069; /* secondary text, metadata, captions */
-  --color-accent: #b45309; /* deep amber: links, primary button, active language */
+  --color-accent: #b45309; /* deep amber: links, primary button */
   --color-accent-hover: #92400e; /* primary button hover */
   --color-on-accent: #fdfaf5; /* text placed on top of amber */
 }

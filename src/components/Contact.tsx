@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { GitHubIcon, LinkedInIcon } from './icons'
 import { Reveal } from './Reveal'
 import { Section } from './shared'
+import { HoverBorderGradient } from './ui/hover-border-gradient'
 import { StatefulButton } from './ui/stateful-button'
 
 const email = 'business@tigranagekyan.com'
@@ -107,13 +108,16 @@ export default function Contact() {
               line. aria-live announces the result, which fades in like the
               rest of the page's text */}
           <div className="flex flex-wrap items-center gap-4 pt-1">
-            <StatefulButton
-              type="submit"
-              state={status.state === 'sending' ? 'loading' : status.state === 'sent' ? 'success' : 'idle'}
-              disabled={status.state === 'sending'}
-            >
-              Send message
-            </StatefulButton>
+            {/* Hover Border Gradient around the button: a light circling the border, glowing amber on hover */}
+            <HoverBorderGradient as="div" containerClassName="rounded">
+              <StatefulButton
+                type="submit"
+                state={status.state === 'sending' ? 'loading' : status.state === 'sent' ? 'success' : 'idle'}
+                disabled={status.state === 'sending'}
+              >
+                Send message
+              </StatefulButton>
+            </HoverBorderGradient>
             <div aria-live="polite" className="text-[14px]">
               {status.state === 'sent' && <Reveal className="text-ink">Thanks, your message is on its way.</Reveal>}
               {status.state === 'error' && <Reveal className="text-destructive">{status.message}</Reveal>}
@@ -125,18 +129,19 @@ export default function Contact() {
         <div className="space-y-6 md:col-span-5">
           <div className="space-y-2">
             <p className="text-[15px] text-muted">Or you can mail me manually at</p>
-            {/* Email row: amber mailto link + small outlined "Copy" button */}
+            {/* Email row: amber mailto link + small "Copy" button with a Hover Border Gradient */}
             <div className="flex flex-wrap items-center gap-3">
               <a href={`mailto:${email}`} className="break-all text-[18px] font-medium text-accent hover:underline">
                 {email}
               </a>
-              <button
+              <HoverBorderGradient
                 type="button"
                 onClick={copyEmail}
-                className="rounded border border-line-strong px-2.5 py-1 font-mono text-[12px] text-muted transition-colors hover:border-line-hover hover:text-ink"
+                containerClassName="rounded"
+                className="bg-canvas px-2.5 py-1 font-mono text-[12px] text-muted transition-colors hover:text-ink"
               >
                 {copied ? 'Copied!' : 'Copy'}
-              </button>
+              </HoverBorderGradient>
             </div>
           </div>
 

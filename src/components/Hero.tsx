@@ -2,6 +2,7 @@
 // one-sentence intro, and the call-to-action buttons.
 import { Reveal } from './Reveal'
 import { BackgroundRippleEffect } from './ui/background-ripple-effect'
+import { HoverBorderGradient } from './ui/hover-border-gradient'
 import { TextGenerateEffect } from './ui/text-generate-effect'
 
 export default function Hero() {
@@ -44,35 +45,27 @@ export default function Hero() {
 
           {/* Call-to-action row. Wraps onto two lines on narrow screens */}
           <Reveal onMount delay={1.2} className="pointer-events-auto mt-10 flex w-fit flex-wrap items-center gap-4">
-            {/* Primary button: solid amber, scrolls down to the Work section */}
-            <a
+            {/* Primary button: solid amber, scrolls down to the Work section.
+                Both buttons use Hover Border Gradient (a light circling the
+                border, glowing amber on hover) */}
+            <HoverBorderGradient
+              as="a"
               href="#work"
-              className="inline-flex items-center rounded bg-accent px-5 py-2.5 text-[15px] font-medium text-on-accent transition-colors hover:bg-accent-hover"
+              containerClassName="rounded"
+              className="inline-flex items-center bg-accent px-5 py-2.5 text-[15px] font-medium text-on-accent transition-colors hover:bg-accent-hover"
             >
               See my work
-            </a>
+            </HoverBorderGradient>
 
-            {/* Résumé download and its language picker, kept together */}
-            <div className="inline-flex items-center gap-2">
-              {/* Secondary (ghost) button: transparent with an outline. Link the PDF here */}
-              <a
-                href="#"
-                className="inline-flex items-center rounded border border-line-strong px-4 py-2.5 text-[15px] text-ink transition-colors hover:border-line-hover"
-              >
-                Résumé (PDF)
-              </a>
-
-              {/* Résumé language: EN (amber = selected) · עב (Hebrew) */}
-              <span className="pl-1 font-mono text-[12px] text-muted">
-                <a href="#" className="text-accent hover:underline">
-                  EN
-                </a>
-                <span className="text-line-hover"> · </span>
-                <a href="#" className="text-muted hover:underline">
-                  עב
-                </a>
-              </span>
-            </div>
+            {/* Résumé download. Secondary button: dark fill inside the border. Link the PDF here */}
+            <HoverBorderGradient
+              as="a"
+              href="#"
+              containerClassName="rounded"
+              className="inline-flex items-center bg-canvas px-4 py-2.5 text-[15px] text-ink"
+            >
+              Résumé (PDF)
+            </HoverBorderGradient>
           </Reveal>
         </div>
       </section>

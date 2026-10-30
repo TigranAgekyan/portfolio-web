@@ -36,7 +36,7 @@ export default function Header() {
           Tigran Agekyan
         </a>
 
-        {/* Right-hand group: nav links + language/theme controls */}
+        {/* Right-hand group: nav links + theme control */}
         <div className="flex items-center gap-7">
           {/* Section navigation (640px and up): grey links that turn white on hover.
               On phones these move into the dropdown menu below. */}
@@ -48,17 +48,9 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Language switcher + theme toggle (+ menu button on phones),
-              set off by a vertical hairline on the left */}
+          {/* Theme toggle (+ menu button on phones), set off by a vertical
+              hairline on the left */}
           <div className="flex items-center gap-3 border-l border-line pl-4 font-mono text-[13px] text-muted">
-            {/* Current language, shown in white */}
-            <span className="text-ink">EN</span>
-            {/* Dim dot separating the two languages */}
-            <span className="text-separator">·</span>
-            {/* Link to the Hebrew version (not built yet, so href is "#") */}
-            <a href="#" title="Hebrew version" className="transition-colors hover:text-ink">
-              עב
-            </a>
             {/* Light/dark theme toggle. Shows the theme it switches to (sun in
                 dark, moon in light); the new theme opens in a circle from here */}
             <button
@@ -66,7 +58,7 @@ export default function Header() {
               aria-label={`Switch to ${nextTheme} theme`}
               title={`Switch to ${nextTheme} theme`}
               onClick={(e) => switchTheme(nextTheme, e.currentTarget, setTheme)}
-              className="ml-2 flex items-center text-muted transition-colors hover:text-ink"
+              className="flex items-center text-muted transition-colors hover:text-ink"
             >
               {theme === 'dark' ? <SunIcon className="h-[17px] w-[17px]" /> : <MoonIcon className="h-[17px] w-[17px]" />}
             </button>

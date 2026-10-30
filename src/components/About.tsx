@@ -1,6 +1,6 @@
 import { Reveal } from './Reveal'
 import { ThreeDMarquee } from './ui/3d-marquee'
-import { GlowingEffect } from './ui/glowing-effect'
+import { HoverBorderGradient } from './ui/hover-border-gradient'
 import { Section, SectionTitle } from './shared'
 
 // Photographs and VFX shots for the tilted background grid behind the bio
@@ -53,7 +53,8 @@ export default function About() {
           {/* Portrait (up to 280×340), left-aligned under the bio on phones,
               right-aligned on desktop. Fades in just after the bio */}
           <Reveal className="flex justify-start md:col-span-5 md:justify-end" delay={0.1}>
-            <div className="relative h-[340px] w-full max-w-[280px] rounded border border-line bg-panel">
+            {/* Hover Border Gradient: a grey light circles the border, which glows amber on hover */}
+            <HoverBorderGradient as="div" containerClassName="h-[340px] w-full max-w-[280px] rounded" className="h-full w-full bg-panel">
               {/* 560px-wide WebP (2× the box) cropped to fill, keeping the face in frame */}
               <img
                 src="/img/portrait.webp"
@@ -64,9 +65,7 @@ export default function About() {
                 draggable={false}
                 className="absolute inset-0 h-full w-full rounded object-cover object-top"
               />
-              {/* Amber highlight that runs along the border, following the pointer */}
-              <GlowingEffect disabled={false} spread={40} proximity={64} inactiveZone={0.01} />
-            </div>
+            </HoverBorderGradient>
           </Reveal>
         </div>
       </div>

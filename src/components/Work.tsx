@@ -1,15 +1,26 @@
-import { useCallback, useState } from 'react'
+import { Bot, Database, Globe, Mic, Server } from 'lucide-react'
+import { useCallback, useState, useSyncExternalStore } from 'react'
 import { HomelabStats } from './HomelabStats'
-import { ArrowRightIcon } from './icons'
 import { openDemoHandler, SimmerDemoWindow, simmerDemoUrl } from './SimmerDemo'
 import { CardBody, CardContainer, CardItem } from './ui/3d-card'
 import { Reveal, RevealChildren } from './Reveal'
-import { GlowingEffect } from './ui/glowing-effect'
+import { HoverBorderGradient } from './ui/hover-border-gradient'
+import { LayoutTextFlip } from './ui/layout-text-flip'
+import { Tooltip } from './ui/tooltip-card'
 import { ExternalLink, Section, SectionTitle } from './shared'
 
 
-// Steps of the Simmer pipeline diagram, drawn left to right with arrows between them.
-const simmerPipeline = ['frontend sends URL', 'backend', 'local transcription', 'LLM returns JSON', 'saved to database']
+// Nodes of the Simmer pipeline diagram, drawn left to right as icon nodes
+// joined by connector lines, in the style of a node-based workflow editor.
+// Each label is a short action, shown in a tooltip on hover, or on phones in
+// a box under the nodes when a node is tapped.
+const simmerPipeline = [
+  { label: 'Send URL', icon: Globe },
+  { label: 'Handle request', icon: Server },
+  { label: 'Transcribe audio', icon: Mic },
+  { label: 'Extract recipe', icon: Bot },
+  { label: 'Save recipe', icon: Database },
+]
 
 // Tiles in the Homelab service diagram (2×2 grid): service name + one-line role.
 const homelabServices = [
@@ -18,6 +29,18 @@ const homelabServices = [
   { name: 'Trilium Notes', role: 'Hierarchical vault' },
   { name: 'Beszel & Uptime Kuma', role: 'Host telemetry' },
 ]
+
+// Whether a CSS media query currently matches, updating when it changes
+function useMediaQuery(query: string) {
+  return useSyncExternalStore(
+    (onChange) => {
+      const list = window.matchMedia(query)
+      list.addEventListener('change', onChange)
+      return () => list.removeEventListener('change', onChange)
+    },
+    () => window.matchMedia(query).matches,
+  )
+}
 
 // "Work" section: one large featured project (Simmer), then two smaller
 // projects side by side (SleepObserver and Homelab).
@@ -44,6 +67,10 @@ function Simmer() {
   const [demoOpen, setDemoOpen] = useState(false)
   const openDemo = openDemoHandler(() => setDemoOpen(true))
   const closeDemo = useCallback(() => setDemoOpen(false), [])
+  // Pipeline diagram: below 640px the nodes are tapped instead of hovered,
+  // and this is the one whose label shows in the box under them
+  const isPhone = useMediaQuery('(max-width: 639px)')
+  const [activeNode, setActiveNode] = useState(0)
 
   return (
     <div className="mb-12 border-b border-line pb-12 sm:mb-16 sm:pb-16">
@@ -70,21 +97,69 @@ function Simmer() {
           <div className="pt-2">
             {/* Tiny uppercase caption above the diagram */}
             <span className="mb-2.5 block font-mono text-[11px] tracking-wider text-muted uppercase">Pipeline architecture</span>
-            {/* Steps with arrows between them. Phones: a vertical column with
-                downward arrows. 640px and up: a horizontal row that wraps */}
-            <div className="flex flex-col items-start gap-1.5 font-mono text-[12px] text-muted sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-              {simmerPipeline.map((step, i) => (
-                // One step plus the arrow after it, kept together so a line
-                // never starts with an orphaned arrow when the row wraps
-                <div key={step} className="flex flex-col items-start gap-1.5 sm:flex-row sm:items-center sm:gap-2">
-                  {/* Step box: small outline on a slightly lighter background */}
-                  <div className="rounded border border-line bg-panel px-2.5 py-1.5 text-ink">{step}</div>
-                  {/* Arrow after every step except the last. Rotated to point down on phones */}
-                  {i < simmerPipeline.length - 1 && (
-                    <ArrowRightIcon className="ml-3 h-3.5 w-3.5 rotate-90 text-line-hover sm:ml-0 sm:rotate-0" />
-                  )}
+            {/* The nodes in one row spread across the full column width, with
+                the connectors stretching to fill the gaps. Nodes are 44px on
+                phones and 56px from 640px up, so the row always fits (no
+                scrolling, which would also clip the tooltips) */}
+            <div className="py-2">
+              <div className="flex w-full items-center">
+                {simmerPipeline.map(({ label, icon: Icon }, i) => {
+                  // Node: icon in a rounded square with a Hover Border Gradient
+                  // (a light circling the border, glowing amber on hover).
+                  // The selected node on phones keeps the amber glow
+                  const node = (
+                    <HoverBorderGradient
+                      as="span"
+                      highlighted={isPhone && i === activeNode}
+                      containerClassName="rounded-lg"
+                      className="flex h-11 w-11 items-center justify-center bg-canvas text-ink sm:h-14 sm:w-14"
+                    >
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.5} aria-hidden />
+                      {/* Screen readers get the label, since the tooltip is mouse/touch only */}
+                      <span className="sr-only">{label}</span>
+                      {/* Connection dots on the left (input) and right (output)
+                          edges, skipped where there's nothing to connect to */}
+                      {i > 0 && (
+                        <span className="absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full bg-line-hover" />
+                      )}
+                      {i < simmerPipeline.length - 1 && (
+                        <span className="absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full bg-line-hover" />
+                      )}
+                    </HoverBorderGradient>
+                  )
+
+                  return (
+                    // One node plus the connector after it. All but the last
+                    // share the spare width, so the connectors grow evenly
+                    <div key={label} className={`flex items-center ${i < simmerPipeline.length - 1 ? 'flex-1' : ''}`}>
+                      {/* Phones: tapping a node selects it and flips the box
+                          below to its label. Larger screens: the label shows
+                          in a tooltip that follows the cursor */}
+                      {isPhone ? (
+                        <button type="button" aria-pressed={i === activeNode} onClick={() => setActiveNode(i)}>
+                          {node}
+                        </button>
+                      ) : (
+                        <Tooltip content={<span className="font-mono text-[12px] text-ink">{label}</span>}>{node}</Tooltip>
+                      )}
+                      {/* Connector: a gray line ending in an arrowhead, level with the node centers */}
+                      {i < simmerPipeline.length - 1 && (
+                        <div className="mx-1.5 flex min-w-3 flex-1 items-center text-line-hover sm:mx-2">
+                          <div className="h-px flex-1 bg-current" />
+                          <span className="border-y-4 border-l-[6px] border-y-transparent border-l-current" />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              {/* Phones only: a box centered under the nodes showing the
+                  selected node's label, flipping to the new one on each tap */}
+              {isPhone && (
+                <div className="mt-4 flex justify-center" aria-live="polite">
+                  <LayoutTextFlip words={simmerPipeline.map((step) => step.label)} index={activeNode} />
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -111,39 +186,46 @@ function Simmer() {
             Fades in just after the text column starts */}
         <Reveal className="md:col-span-5" delay={0.1}>
           <CardContainer containerClassName="-m-6 p-6 md:justify-end">
-            {/* Phone body: 200×400 on phones, 230×460 from 640px up, large rounded corners and an outline */}
-            <CardBody className="relative flex h-[400px] w-[200px] flex-col justify-between rounded-[36px] border border-line-strong bg-panel p-3 select-none sm:h-[460px] sm:w-[230px]">
-              {/* Amber highlight that runs along the border, following the pointer */}
-              <GlowingEffect disabled={false} spread={40} proximity={64} inactiveZone={0.01} />
-              {/* Dynamic-island / notch pill at the top. Lifts furthest on hover */}
-              <CardItem translateZ={50} className="mx-auto mt-1 h-4 w-24 rounded-full bg-line" />
-              {/* Screen area, lifted slightly off the body. Clicking it opens the
-                  demo window (the demo in a new tab on phones); no visible link
-                  text, the border brightens on hover. The app screenshot fills the
-                  screen, cropped from the top to fit. On hover it blurs and dims
-                  behind an "Open Simmer Demo" label */}
-              <CardItem
-                as="a"
-                href={simmerDemoUrl}
-                target="_blank"
-                rel="noreferrer"
-                onClick={openDemo}
-                aria-label="Try the Simmer demo"
-                translateZ={30}
-                className="group relative my-3 w-full flex-1 cursor-pointer overflow-hidden rounded-[24px] border border-line bg-canvas transition-colors hover:border-line-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            {/* Phone body: 200×400 on phones, 230×460 from 640px up, large
+                rounded corners and a Hover Border Gradient outline (a light
+                circling the border, glowing amber on hover). Both layers keep
+                the 3D context so the items inside can lift off the body */}
+            <CardBody className="h-[400px] w-[200px] select-none sm:h-[460px] sm:w-[230px]">
+              <HoverBorderGradient
+                as="div"
+                containerClassName="h-full w-full rounded-[36px] transform-3d"
+                className="flex h-full w-full flex-col justify-between bg-panel p-3 transform-3d"
               >
-                <img
-                  src="/img/screenshot.webp"
-                  alt="Simmer app screenshot"
-                  draggable={false}
-                  className="absolute inset-0 h-full w-full object-cover object-top transition-[filter] duration-300 group-hover:blur-sm group-hover:brightness-75 group-focus-visible:blur-sm group-focus-visible:brightness-75"
-                />
-                <span className="absolute inset-0 flex items-center justify-center font-mono text-[13px] text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-                  Open Simmer Demo
-                </span>
-              </CardItem>
-              {/* Home-indicator bar at the bottom */}
-              <CardItem translateZ={20} className="mx-auto mb-1 h-1 w-20 rounded-full bg-line" />
+                {/* Dynamic-island / notch pill at the top. Lifts furthest on hover */}
+                <CardItem translateZ={50} className="mx-auto mt-1 h-4 w-24 rounded-full bg-line" />
+                {/* Screen area, lifted slightly off the body. Clicking it opens the
+                    demo window (the demo in a new tab on phones); no visible link
+                    text, the border brightens on hover. The app screenshot fills the
+                    screen, cropped from the top to fit. On hover it blurs and dims
+                    behind an "Open Simmer Demo" label */}
+                <CardItem
+                  as="a"
+                  href={simmerDemoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={openDemo}
+                  aria-label="Try the Simmer demo"
+                  translateZ={30}
+                  className="group relative my-3 w-full flex-1 cursor-pointer overflow-hidden rounded-[24px] border border-line bg-canvas transition-colors hover:border-line-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  <img
+                    src="/img/screenshot.webp"
+                    alt="Simmer app screenshot"
+                    draggable={false}
+                    className="absolute inset-0 h-full w-full object-cover object-top transition-[filter] duration-300 group-hover:blur-sm group-hover:brightness-75 group-focus-visible:blur-sm group-focus-visible:brightness-75"
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center font-mono text-[13px] text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    Open Simmer Demo
+                  </span>
+                </CardItem>
+                {/* Home-indicator bar at the bottom */}
+                <CardItem translateZ={20} className="mx-auto mb-1 h-1 w-20 rounded-full bg-line" />
+              </HoverBorderGradient>
             </CardBody>
           </CardContainer>
         </Reveal>
@@ -164,15 +246,18 @@ function SleepObserver() {
       </div>
 
       {/* Tagline in white */}
-      <p className="text-[15px] leading-relaxed text-ink">Full-stack sleep tracking app with charts.</p>
+      <p className="text-[15px] leading-relaxed text-ink">
+        Full-stack sleep tracker that turns data from a wearable into sleep stages and a nightly score.
+      </p>
 
-      {/* Detail in grey: a problem solved on this project */}
+      {/* Detail in grey: what the app does with the data */}
       <p className="max-w-[55ch] text-[14px] leading-relaxed text-muted">
-        Fixed production routing where Express intercepted '/' before the React static build was served.
+        Heart rate, movement, skin temperature and sound readings are classified into light, deep and REM sleep, then
+        scored 0–10 from wake-ups, snoring, heart rate and movement. A dashboard charts duration, cycles and BPM trends.
       </p>
 
       {/* Tech stack line */}
-      <div className="font-mono text-[12px] text-muted">React, TypeScript, Express, Recharts, deployed on Render</div>
+      <div className="font-mono text-[12px] text-muted">React, TypeScript, Express, Firebase, Recharts, Three.js, deployed on Render</div>
 
       {/* Project links */}
       <div className="flex items-center gap-4 pt-1 text-[14px]">
@@ -180,14 +265,12 @@ function SleepObserver() {
         <ExternalLink href="https://github.com/TigranAgekyan/SleepObserver-Final">Source</ExternalLink>
       </div>
 
-      {/* Browser-window mockup for a screenshot. The outer box carries the
-          border glow; the inner one clips the address bar to the rounded corners
-          (the glow sits on the border, so it can't be inside the clipped box) */}
+      {/* Browser-window mockup for a screenshot. The outer box is the Hover
+          Border Gradient outline (a light circling the border, glowing amber
+          on hover); the inner one clips the address bar to the rounded corners */}
       <div className="pt-4">
-        <div className="relative rounded">
-          {/* inset-px: line the glow up with the inner box's 1px border */}
-          <GlowingEffect disabled={false} spread={40} proximity={64} inactiveZone={0.01} className="inset-px" />
-          <div className="flex h-64 w-full flex-col overflow-hidden rounded border border-line bg-panel">
+        <HoverBorderGradient as="div" containerClassName="w-full rounded">
+          <div className="flex h-64 w-full flex-col overflow-hidden rounded bg-panel">
             {/* Fake address bar showing the site URL */}
             <div className="flex h-6 items-center border-b border-line bg-panel-bar px-3">
               <span className="font-mono text-[10px] text-muted">sleepobserver.onrender.com</span>
@@ -197,7 +280,7 @@ function SleepObserver() {
               <img alt='SleepObserver Image' src='/img/sleepobserver_screenshot.png'/>
             </div>
           </div>
-        </div>
+        </HoverBorderGradient>
       </div>
     </RevealChildren>
   )

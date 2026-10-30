@@ -12,7 +12,7 @@ import { TracingBeam } from './components/ui/tracing-beam'
 function App() {
   return (
     <>
-      {/* Fixed top bar with name, section links, language and theme controls */}
+      {/* Fixed top bar with name, section links and theme control */}
       <Header />
 
       {/* pt-14 pushes content below the 56px fixed header */}
