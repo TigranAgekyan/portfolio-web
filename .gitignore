@@ -25,3 +25,8 @@ dist-ssr
 
 .claude/settings.local.json
 .claude/settings.local.json
+
+# Cloudflare Pages local secrets (RESEND_API_KEY)
+.dev.vars
+
+.wrangler/

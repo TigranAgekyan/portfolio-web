@@ -26,6 +26,8 @@
   --color-accent: #f59e0b; /* amber: links, primary button, active language */
   --color-accent-hover: #d97706; /* primary button hover */
   --color-on-accent: #111317; /* text placed on top of amber */
+  --color-success: #22c55e; /* green: contact form's Send button once the message is sent */
+  --color-success-hover: #16a34a; /* that button's hover */
 
   /* ---- Fonts ---- */
   --font-display: 'Bricolage Grotesque', sans-serif; /* headings */

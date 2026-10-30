@@ -8,6 +8,7 @@ const entries = [
     title: 'Kinneret College — Networking & CyberSecurity studies, with many bonus Programming Courses',
     years: '2022–2024',
   },
+  { title: 'School, Finished With Excellence — Specialized in Programming', years: '2010-2022'},
 ]
 
 // "Experience" section: a plain text list, no cards.

@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export const BackgroundRippleEffect = ({
@@ -20,6 +20,24 @@ export const BackgroundRippleEffect = ({
   const [rippleKey, setRippleKey] = useState(0);
   const ref = useRef<any>(null);
 
+  // `cols` is a minimum: on screens wider than cols * cellSize, add columns
+  // so the grid always spans the full width. Kept odd so a cell sits dead
+  // centre under the top-centre radial fade
+  const [fitCols, setFitCols] = useState(cols);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      const needed = Math.ceil(el.clientWidth / cellSize);
+      const next = Math.max(cols, needed % 2 ? needed : needed + 1);
+      setFitCols(next);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [cols, cellSize]);
+
   return (
     <div
       ref={ref}
@@ -31,13 +49,15 @@ export const BackgroundRippleEffect = ({
         className,
       )}
     >
-      <div className="relative h-auto w-auto overflow-hidden">
+      {/* flex + justify-center keeps the grid centred even when it's wider
+          than the container (margin auto can't centre an overflowing box) */}
+      <div className="relative flex h-auto w-auto justify-center overflow-hidden">
         <div className="pointer-events-none absolute inset-0 z-[2] h-full w-full overflow-hidden" />
         <DivGrid
           key={`base-${rippleKey}`}
           className="mask-radial-from-20% mask-radial-at-top opacity-600"
           rows={rows}
-          cols={cols}
+          cols={fitCols}
           cellSize={cellSize}
           borderColor="var(--cell-border-color)"
           fillColor="var(--cell-fill-color)"

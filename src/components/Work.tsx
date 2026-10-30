@@ -1,10 +1,12 @@
 import { useCallback, useState } from 'react'
+import { HomelabStats } from './HomelabStats'
 import { ArrowRightIcon } from './icons'
 import { openDemoHandler, SimmerDemoWindow, simmerDemoUrl } from './SimmerDemo'
 import { CardBody, CardContainer, CardItem } from './ui/3d-card'
 import { Reveal, RevealChildren } from './Reveal'
 import { GlowingEffect } from './ui/glowing-effect'
-import { ExternalLink, PlaceholderLabel, Section, SectionTitle } from './shared'
+import { ExternalLink, Section, SectionTitle } from './shared'
+
 
 // Steps of the Simmer pipeline diagram, drawn left to right with arrows between them.
 const simmerPipeline = ['frontend sends URL', 'backend', 'local transcription', 'LLM returns JSON', 'saved to database']
@@ -98,8 +100,7 @@ function Simmer() {
             <ExternalLink href={simmerDemoUrl} onClick={openDemo}>
               Try the demo
             </ExternalLink>
-            <ExternalLink href="#">Watch demo (video)</ExternalLink>
-            <ExternalLink href="#">Source</ExternalLink>
+            <ExternalLink href="https://github.com/TigranAgekyan/recipe-app">Source</ExternalLink>
           </div>
         </RevealChildren>
 
@@ -118,7 +119,9 @@ function Simmer() {
               <CardItem translateZ={50} className="mx-auto mt-1 h-4 w-24 rounded-full bg-line" />
               {/* Screen area, lifted slightly off the body. Clicking it opens the
                   demo window (the demo in a new tab on phones); no visible link
-                  text, the border brightens on hover. Replace the label with an <img> of the app */}
+                  text, the border brightens on hover. The app screenshot fills the
+                  screen, cropped from the top to fit. On hover it blurs and dims
+                  behind an "Open Simmer Demo" label */}
               <CardItem
                 as="a"
                 href={simmerDemoUrl}
@@ -127,9 +130,17 @@ function Simmer() {
                 onClick={openDemo}
                 aria-label="Try the Simmer demo"
                 translateZ={30}
-                className="my-3 flex w-full flex-1 cursor-pointer flex-col items-center justify-center rounded-[24px] border border-line bg-canvas p-4 text-center transition-colors hover:border-line-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="group relative my-3 w-full flex-1 cursor-pointer overflow-hidden rounded-[24px] border border-line bg-canvas transition-colors hover:border-line-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
-                <PlaceholderLabel>Simmer screenshot</PlaceholderLabel>
+                <img
+                  src="/img/screenshot.webp"
+                  alt="Simmer app screenshot"
+                  draggable={false}
+                  className="absolute inset-0 h-full w-full object-cover object-top transition-[filter] duration-300 group-hover:blur-sm group-hover:brightness-75 group-focus-visible:blur-sm group-focus-visible:brightness-75"
+                />
+                <span className="absolute inset-0 flex items-center justify-center font-mono text-[13px] text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  Open Simmer Demo
+                </span>
               </CardItem>
               {/* Home-indicator bar at the bottom */}
               <CardItem translateZ={20} className="mx-auto mb-1 h-1 w-20 rounded-full bg-line" />
@@ -165,8 +176,8 @@ function SleepObserver() {
 
       {/* Project links */}
       <div className="flex items-center gap-4 pt-1 text-[14px]">
-        <ExternalLink href="#">Live</ExternalLink>
-        <ExternalLink href="#">Source</ExternalLink>
+        <ExternalLink href="https://sleepobserver.onrender.com">Live</ExternalLink>
+        <ExternalLink href="https://github.com/TigranAgekyan/SleepObserver-Final">Source</ExternalLink>
       </div>
 
       {/* Browser-window mockup for a screenshot. The outer box carries the
@@ -176,14 +187,14 @@ function SleepObserver() {
         <div className="relative rounded">
           {/* inset-px: line the glow up with the inner box's 1px border */}
           <GlowingEffect disabled={false} spread={40} proximity={64} inactiveZone={0.01} className="inset-px" />
-          <div className="flex h-44 w-full flex-col overflow-hidden rounded border border-line bg-panel">
+          <div className="flex h-64 w-full flex-col overflow-hidden rounded border border-line bg-panel">
             {/* Fake address bar showing the site URL */}
             <div className="flex h-6 items-center border-b border-line bg-panel-bar px-3">
               <span className="font-mono text-[10px] text-muted">sleepobserver.onrender.com</span>
             </div>
             {/* Page area. Replace the label with an <img> of the app */}
             <div className="flex flex-1 items-center justify-center">
-              <PlaceholderLabel>SleepObserver screenshot</PlaceholderLabel>
+              <img alt='SleepObserver Image' src='/img/sleepobserver_screenshot.png'/>
             </div>
           </div>
         </div>
@@ -216,11 +227,8 @@ function Homelab() {
       {/* Service diagram: outlined box containing a header, a 2×2 grid of services and a footer */}
       <div className="pt-4">
         <div className="w-full rounded border border-line bg-panel p-4">
-          {/* Diagram header: network on the left, OS on the right, hairline below */}
-          <div className="mb-3 flex justify-between border-b border-line pb-2 font-mono text-[11px] text-muted">
-            <span>Tailscale Mesh</span>
-            <span>Ubuntu 24.04 LTS</span>
-          </div>
+          {/* Diagram header with live status, then live CPU / memory / disk / uptime from Beszel */}
+          <HomelabStats />
 
           {/* 2×2 grid of service tiles (darker background than the box) */}
           <div className="grid grid-cols-2 gap-2 font-mono text-[12px]">
@@ -236,7 +244,7 @@ function Homelab() {
 
           {/* Diagram footer: the shared infrastructure underneath, hairline above */}
           <div className="mt-2.5 border-t border-line pt-2 text-center font-mono text-[10px] text-muted">
-            Docker Engine · Dockge compose manager · Caddy reverse proxy
+            Real stats pulled from my private network, using Cloudflare Tunneling and Beszel telemetry.
           </div>
         </div>
       </div>
